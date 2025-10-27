@@ -60,14 +60,6 @@ DELETE
 FROM layoffs_staging2
 WHERE row_num > 1;
 
--- Standardizing data
--- check the spaces and trim them
--- check spelling 
--- NB: You can use TRIM to remove things at the end of a word using TRAILING then specifying what is to be removed and FROM where
--- step 3. -- check blanks and nulls
-
-
-
 SELECT DISTINCT company,
 TRIM(company)
 FROM layoffs_staging2;
@@ -113,6 +105,50 @@ FROM layoffs_staging2;
 ALTER TABLE layoffs_staging2
 MODIFY COLUMN `date` DATE;
 
--- Practise the above first
--- Remember I'm proud of you always, you're doing a great job
+SELECT *
+FROM layoffs_staging2
+WHERE total_laid_off IS NULL
+AND percentage_laid_off IS NULL;
+
+UPDATE layoffs_staging2
+SET industry = NULL
+WHERE industry = '';
+
+SELECT *
+FROM layoffs_staging2
+WHERE industry IS NULL
+;
+
+SELECT t1.industry, t2.industry
+FROM layoffs_staging2 t1
+JOIN layoffs_staging2 t2
+	ON t1.company = t2.company
+    AND t1.location = t2.location
+WHERE t1.industry IS NULL
+AND t2.industry IS NOT NULL;
+
+UPDATE layoffs_staging2 t1
+JOIN layoffs_staging2 t2
+		ON t1.company = t2.company
+		AND t1.location = t2.location
+SET t1.industry = t2.industry
+WHERE t1.industry IS NULL 
+AND t2.industry IS NOT NULL;
+
+
+SELECT *
+FROM layoffs_staging2
+WHERE total_laid_off IS NULL
+AND percentage_laid_off IS NULL;
+
+DELETE
+FROM layoffs_staging2
+WHERE total_laid_off IS NULL
+AND percentage_laid_off IS NULL;
+
+SELECT *
+FROM layoffs_staging2;
+
+ALTER TABLE layoffs_staging2
+DROP COLUMN row_num;
 
